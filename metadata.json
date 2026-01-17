@@ -1,0 +1,5 @@
+{
+  "name": "Quiz_OS",
+  "description": "A real-time, monochrome, serverless quiz platform powered by Firebase Firestore.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == userId; // Allow user to create their own doc on login
+    }
+
+    // Quizzes collection
+    match /quizzes/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+      
+      // Questions sub-collection - STRICTLY RESTRICTED FOR USERS
+      match /questions/{questionId} {
+        allow read, write: if isAdmin();
+      }
+    }
+
+    // Live Sessions (The "Socket")
+    match /live_sessions/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Responses
+    match /responses/{responseId} {
+      allow read: if isAdmin();
+      // Users can only create a response if it belongs to them
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Cannot update or delete responses once submitted
+      allow update, delete: if false;
+    }
+  }
+}
