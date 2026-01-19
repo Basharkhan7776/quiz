@@ -22,9 +22,10 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin();
       
-      // Questions sub-collection - STRICTLY RESTRICTED FOR USERS
+      // Questions sub-collection
       match /questions/{questionId} {
-        allow read, write: if isAdmin();
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
       }
     }
 
@@ -36,7 +37,7 @@ service cloud.firestore {
 
     // Responses
     match /responses/{responseId} {
-      allow read: if isAdmin();
+      allow read: if isSignedIn();
       // Users can only create a response if it belongs to them
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       // Cannot update or delete responses once submitted

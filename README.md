@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Quiz OS
 
-# Run and deploy your AI Studio app
+A real-time, interactive quiz platform with a dynamic "Control Room" for hosts and engaging UI for players. Built with React (Vite), Firebase, and Tailwind CSS.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/12CEBqm6vbTglUiv8FaxhTmdz0HbJMl2g
+### 🎮 Player Experience
 
-## Run Locally
+- **Real-time Gameplay**: Questions appear instantly when the host pushes them.
+- **Live Leaderboard**: See standings update in real-time (after the reveal!).
+- **Playful Animations**: Smooth transitions and effects using Framer Motion.
+- **Mobile Responsive**: Optimized for playing on phones.
 
-**Prerequisites:**  Node.js
+### 🕹️ Admin Control Room
 
+- **Live Monitoring**: Track how many players have answered.
+- **Game Control**:
+  - `Push Question`: Send the next question to all players.
+  - `Start Timer`: Trigger the countdown for everyone.
+  - `Reveal Answer`: Show the correct answer and update the user leaderboards.
+- **Question Management**: Create and edit quizzes with custom time limits and images.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Quick Start
+
+1. **Clone the repo**.
+2. **Setup Environment**: See [DEPLOY.md](./DEPLOY.md) for keys.
+3. **Run**: `npm run dev`
+
+## Deployment
+
+For detailed instructions on setting up Firebase and deploying to Vercel, please read [DEPLOY.md](./DEPLOY.md).

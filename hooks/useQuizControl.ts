@@ -1,7 +1,13 @@
-import { useState, useEffect } from 'react';
-import { doc, updateDoc, collection, getDocs, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { Question } from '../types';
+import { useState, useEffect } from "react";
+import {
+  doc,
+  updateDoc,
+  collection,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { Question } from "../types";
 
 export const useQuizControl = (quizId: string) => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -10,9 +16,11 @@ export const useQuizControl = (quizId: string) => {
   useEffect(() => {
     const loadQuestions = async () => {
       try {
-        const qCol = collection(db, 'quizzes', quizId, 'questions');
+        const qCol = collection(db, "quizzes", quizId, "questions");
         const snap = await getDocs(qCol);
-        const loadedQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() } as Question));
+        const loadedQuestions = snap.docs.map(
+          (d) => ({ id: d.id, ...d.data() }) as Question,
+        );
         setQuestions(loadedQuestions);
         setLoading(false);
       } catch (err) {
@@ -23,28 +31,36 @@ export const useQuizControl = (quizId: string) => {
     loadQuestions();
   }, [quizId]);
 
-  const liveSessionRef = doc(db, 'live_sessions', quizId);
+  const liveSessionRef = doc(db, "live_sessions", quizId);
 
   const initializeSession = async () => {
-     await setDoc(liveSessionRef, {
-       status: 'waiting',
-       currentQuestionIndex: 0,
-       currentQuestionText: "Waiting for host...",
-       totalQuestions: questions.length
-     }, { merge: true });
+    if (questions.length === 0) return;
+    const firstQ = questions[0];
+
+    await setDoc(
+      liveSessionRef,
+      {
+        status: "waiting",
+        currentQuestionIndex: 0,
+        currentQuestionText: firstQ.text,
+        currentImageUrl: firstQ.imageUrl || null,
+        totalQuestions: questions.length,
+      },
+      { merge: true },
+    );
   };
 
   const pushQuestion = async (index: number) => {
     if (index >= questions.length) return;
     const q = questions[index];
-    
+
     await updateDoc(liveSessionRef, {
-      status: 'waiting',
+      status: "waiting",
       currentQuestionIndex: index,
       currentQuestionText: q.text,
       currentImageUrl: q.imageUrl || null, // Reset or set image
       currentOptions: [],
-      correctIndex: null // Clear previous answer
+      correctIndex: null, // Clear previous answer
     });
   };
 
@@ -53,7 +69,7 @@ export const useQuizControl = (quizId: string) => {
     const q = questions[index];
 
     await updateDoc(liveSessionRef, {
-      status: 'active',
+      status: "active",
       currentOptions: q.options,
       startTime: Date.now(), // Use generic timestamp number for easier client math
     });
@@ -65,20 +81,20 @@ export const useQuizControl = (quizId: string) => {
     const q = questions[index];
 
     await updateDoc(liveSessionRef, {
-      status: 'revealed',
-      correctIndex: q.correctIndex
+      status: "revealed",
+      correctIndex: q.correctIndex,
     });
   };
 
   const endQuiz = async () => {
     await updateDoc(liveSessionRef, {
-      status: 'finished',
-      currentQuestionText: 'Quiz Ended. Thanks for playing.',
-      currentOptions: []
+      status: "finished",
+      currentQuestionText: "Quiz Ended. Thanks for playing.",
+      currentOptions: [],
     });
-    
-    await updateDoc(doc(db, 'quizzes', quizId), {
-      status: 'ended'
+
+    await updateDoc(doc(db, "quizzes", quizId), {
+      status: "ended",
     });
   };
 
@@ -89,6 +105,6 @@ export const useQuizControl = (quizId: string) => {
     pushQuestion,
     revealOptions,
     revealAnswer,
-    endQuiz
+    endQuiz,
   };
 };

@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 interface BlurRevealProps {
   children: React.ReactNode;
@@ -7,7 +7,11 @@ interface BlurRevealProps {
   className?: string;
 }
 
-export const BlurReveal: React.FC<BlurRevealProps> = ({ children, delay = 0, className = "" }) => {
+export const BlurReveal: React.FC<BlurRevealProps> = ({
+  children,
+  delay = 0,
+  className = "",
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
